@@ -34,6 +34,11 @@
         error-text="请求失败，点击重新加载"
         @load="onLoad"
       >
+        <article-item
+          v-for="(article, index) in list"
+          :key="index"
+          :article="article"
+        />
         <van-cell
           v-for="(article, index) in list"
           :key="index"
@@ -46,9 +51,12 @@
 
 <script>
 import { getArticles } from '@/api/article'
+import ArticleItem from '@/components/article-item'
 export default {
   name: 'ArticleList',
-  components: {},
+  components: {
+    ArticleItem
+  },
   props: {
     channel: {
       type: Object,
@@ -117,10 +125,10 @@ export default {
           with_top: 1 // 是否包含置顶，进入页面第一次请求时要包含置顶文章，1-包含置顶，0-不包含
         })
 
-        // 模拟随机失败的情况
-        if (Math.random() > 0.2) {
-          JSON.parse('dsnajndjsa')
-        }
+        // // 模拟随机失败的情况
+        // if (Math.random() > 0.2) {
+        //   JSON.parse('dsnajndjsa')
+        // }
 
         // 2. 将数据追加到列表的顶部
         const { results } = data.data
