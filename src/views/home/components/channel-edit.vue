@@ -63,7 +63,7 @@ import {
   deleteUserChannel
 } from '@/api/channel'
 import { mapState } from 'vuex'
-import { setItem } from '@/utils/storage.js'
+import { setItem } from '@/utils/storage'
 export default {
   name: 'ChannelEdit',
   props: {
@@ -84,6 +84,8 @@ export default {
     }
   },
   computed: {
+    // 获取user
+    ...mapState(['user']),
     // 计算属性会观测内部依赖数据的变化
     // 如果依赖的数据发生变化，则计算属性会重新执行
     recommendChannels() {
@@ -98,7 +100,7 @@ export default {
 
         // return channels
       })
-    },
+    }
     // recommendChannels () {
     //   const channels = []
     //   this.allChannels.forEach(channel => {
@@ -116,8 +118,6 @@ export default {
     //   // 把计算结果返回
     //   return channels
     // }
-    // 获取user
-    ...mapState(['user'])
   },
   created() {
     this.loadAllChannels()
