@@ -3,7 +3,7 @@ import axios from 'axios'
 import store from '@/store/index.js'
 
 const request = axios.create({
-  baseURL: 'http://ttapi.research.itcast.cn/' // 基础路径
+  // baseURL: 'http://ttapi.research.itcast.cn/' // 基础路径
 
 })
 

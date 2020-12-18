@@ -1,27 +1,85 @@
 <template>
   <div class="search-suggestion">
-    <van-cell title="黑马程序员..." icon="search"></van-cell>
-    <van-cell title="黑马程序员..." icon="search"></van-cell>
-    <van-cell title="黑马程序员..." icon="search"></van-cell>
-    <van-cell title="黑马程序员..." icon="search"></van-cell>
-    <van-cell title="黑马程序员..." icon="search"></van-cell>
+    <van-cell
+      icon="search"
+      v-for="(text, index) in suggestions"
+      :key="index"
+      @click="$emit('search', text)"
+    >
+      <div slot="title" v-html="highlight(text)"></div>
+    </van-cell>
+    <!-- 双花括号绑定会直接输出纯文本内容 -->
+    <!-- <div>{{ htmlStr }}</div> -->
+
+    <!-- 使用 v-html 指令可以绑定渲染带有 HTML 标签的字符串 -->
+    <!-- <div v-html="htmlStr"></div> -->
   </div>
 </template>
 
 <script>
+import { getSearchSuggestions } from '@/api/search'
+import { debounce } from 'lodash'
 export default {
   name: 'SearchSuggestion',
   components: {},
-  props: {},
+  props: {
+    searchText: {
+      type: String,
+      required: true
+    }
+  },
   data() {
-    return {}
+    return {
+      // 联想建议数据列表
+      suggestions: []
+    }
   },
   computed: {},
-  watch: {},
+  watch: {
+    searchText: {
+      // 当searchText发生变化的时候会调用handler函数(固定写法)
+      // debounce 函数
+      // 参数1：函数
+      // 参数2：防抖时间
+      // 返回值：防抖之后的函数，和参数1功能是一样的
+      handler: debounce(function(value) {
+        // console.log(value)
+        this.loadSearchSuggestions(value)
+      }, 200),
+      immediate: true
+    }
+  },
   created() {},
   mounted() {},
-  methods: {}
+  methods: {
+    async loadSearchSuggestions(q) {
+      try {
+        const { data } = await getSearchSuggestions(q)
+        // console.log(data)
+        this.suggestions = data.data.options
+      } catch (err) {
+        this.$toast('数据获取失败，请稍后重试')
+      }
+    },
+    highlight(text) {
+      const highlightStr = `<span class="active">${this.searchText}</span>`
+
+      // 正则表达式 // 中间的内容都会当作匹配字符来使用，而不是数据变量
+      // 如果需要根据数据变量动态的创建正则表达式，则手动 new RegExp
+      // RegExp 正则表达式构造函数
+      //    参数1：匹配模式字符串，它会根据这个字符串创建正则对象
+      //    参数2：匹配模式，要写到字符串中
+      const reg = new RegExp(this.searchText, 'gi')
+      return text.replace(reg, highlightStr)
+    }
+  }
 }
 </script>
 
-<style scoped lang="less"></style>
+<style scoped lang="less">
+.search-suggestion {
+  /deep/ span.active {
+    color: #3296fa;
+  }
+}
+</style>
