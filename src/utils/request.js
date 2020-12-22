@@ -1,9 +1,25 @@
 // 封装axios请求模块
 import axios from 'axios'
 import store from '@/store/index.js'
+import JSONBig from 'json-bigint'
 
 const request = axios.create({
-  // baseURL: 'http://ttapi.research.itcast.cn/' // 基础路径
+  // baseURL: 'http://ttapi.research.itcast.cn/', // 基础路径
+  // 自定义后端返回的原始数据
+  // data: 后端返回的原始数据，说白了就是 JSON 格式的字符串
+  // transformResponse 允许自定义原始的响应数据
+  transformResponse: [function(data) {
+    try {
+      // 如果转换成功则返回转换的数据结果
+      return JSONBig.parse(data)
+    } catch (err) {
+      // 如果转换失败, 则包装为统一数据格式并返回
+      return data
+    }
+
+    // axios 默认会在内部这样来处理后端返回的数据
+    // return JSON.parse(data)
+  }]
 
 })
 
